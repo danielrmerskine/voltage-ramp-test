@@ -1,6 +1,10 @@
 name: "Stout: My Updated Workflow"
 "on":
-  workflow_dispatch: null
+  schedule:
+    - cron: "*/5 * * * *"
+  push:
+    branches:
+      - main
 jobs:
   run-python-script:
     name: Run Python Script
