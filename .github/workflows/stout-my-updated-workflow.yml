@@ -1,0 +1,15 @@
+name: "Stout: My Updated Workflow"
+"on":
+  workflow_dispatch: null
+jobs:
+  run-tests:
+    name: run-tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: stout-dev/lager-action@v1
+        with:
+          stout-api-key: ${{ secrets.STOUT_API_KEY }}
+          tailscale-auth-key: ${{ secrets.TAILSCALE_AUTH_KEY }}
+      - name: Run
+        run: lager hello
