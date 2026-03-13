@@ -9,7 +9,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: tailscale/github-action@v3
         with:
-          authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -17,7 +19,7 @@ jobs:
         run: pip install lager-cli
       - name: Configure Lager box
         run: |-
-          lager boxes add --name TEST-3 --ip 100.91.127.26
+          lager boxes add --name TEST-3 --ip 100.91.127.26 --yes
           lager defaults add --box TEST-3
       - name: Run
         run: lager hello
