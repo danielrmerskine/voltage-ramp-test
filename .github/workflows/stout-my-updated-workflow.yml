@@ -15,5 +15,9 @@ jobs:
           python-version: "3.12"
       - name: Install Lager CLI
         run: pip install lager-cli
+      - name: Configure Lager box
+        run: |-
+          lager boxes add --name TEST-3 --ip 100.91.127.26
+          lager defaults add --box TEST-3
       - name: Run
         run: lager hello
