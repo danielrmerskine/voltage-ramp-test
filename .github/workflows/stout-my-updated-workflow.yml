@@ -11,5 +11,6 @@ jobs:
         with:
           stout-api-key: ${{ secrets.STOUT_API_KEY }}
           tailscale-auth-key: ${{ secrets.TAILSCALE_AUTH_KEY }}
+          box: 8e86c55c-ba4a-4ec2-844a-29043344ade8
       - name: Run
         run: lager hello
