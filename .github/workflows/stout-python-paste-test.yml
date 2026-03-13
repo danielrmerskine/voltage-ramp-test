@@ -1,0 +1,25 @@
+name: "Stout: Python Paste TEST"
+"on":
+  workflow_dispatch: null
+jobs:
+  python-paste-test:
+    name: Python Paste Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Lager CLI
+        run: pip install lager-cli
+      - name: Configure Lager box
+        run: |-
+          lager boxes add --name TEST-3 --ip 100.91.127.26 --yes
+          lager defaults add --box TEST-3
+      - name: Run
+        run: lager python
