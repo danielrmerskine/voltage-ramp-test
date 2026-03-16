@@ -1,0 +1,58 @@
+name: "Stout: Test Voltage Ramp"
+"on":
+  workflow_dispatch: null
+jobs:
+  voltage-ramp:
+    name: Voltage Ramp
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Lager CLI
+        run: pip install lager-cli
+      - name: Configure Lager box
+        run: |-
+          lager boxes add --name TEST-3 --ip 100.91.127.26 --yes
+          lager defaults add --box TEST-3
+      - name: Write script
+        run: |-
+          cat > /tmp/stout_script.py << 'STOUT_SCRIPT_EOF'
+          import time
+          from lager import Net, NetType
+
+          # Get supply1 net (Rigol DP821 channel 1 - vibration motor)
+          supply = Net.get('supply1', type=NetType.PowerSupply)
+
+          # Safety limits
+          supply.set_ovp(12.0)   # Over-voltage protection at 12V
+          supply.set_ocp(0.5)    # Over-current protection at 500mA
+
+          # Enable output
+          supply.enable()
+          time.sleep(0.5)
+
+          print('Starting voltage ramp on supply1...')
+
+          # Ramp from 1V to 10V in 1V steps
+          for voltage in range(1, 11):
+              supply.set_voltage(voltage)
+              time.sleep(1)
+              measured_v = supply.voltage()
+              measured_p = supply.power()
+              print(f'Set: {voltage}V  Measured: {measured_v:.3f}V  Power: {measured_p:.3f}W')
+
+          print('Ramp complete. Disabling output.')
+          supply.set_voltage(0)
+          time.sleep(0.5)
+          supply.disable()
+          print('Done!')
+          STOUT_SCRIPT_EOF
+      - name: Run
+        run: lager python /tmp/stout_script.py
