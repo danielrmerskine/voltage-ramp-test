@@ -2,7 +2,7 @@ name: "Stout: TEST"
 "on":
   workflow_dispatch: null
 jobs:
-  test:
+  run:
     name: TEST
     runs-on: ubuntu-latest
     steps:
@@ -17,11 +17,11 @@ jobs:
           python-version: "3.12"
       - name: Install Lager CLI
         run: pip install lager-cli
-      - name: Configure Lager box
+      - name: "Configure box: TEST-3"
         run: |-
           lager boxes add --name TEST-3 --ip 100.91.127.26 --yes
           lager defaults add --box TEST-3
-      - name: Write script
+      - name: "Write script: TEST"
         run: |-
           cat > /tmp/stout_script.py << 'STOUT_SCRIPT_EOF'
           import time
@@ -54,26 +54,11 @@ jobs:
           supply.disable()
           print('Done!')
           STOUT_SCRIPT_EOF
-      - name: Run
+      - name: "Run: TEST"
         run: lager python /tmp/stout_script.py
-  test-instruments:
-    name: TEST instruments
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: tailscale/github-action@v3
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
-          tags: tag:ci
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Install Lager CLI
-        run: pip install lager-cli
-      - name: Configure Lager box
+      - name: "Configure box: TEST-3"
         run: |-
           lager boxes add --name TEST-3 --ip 100.91.127.26 --yes
           lager defaults add --box TEST-3
-      - name: Run
+      - name: "Run: TEST instruments"
         run: lager instruments
