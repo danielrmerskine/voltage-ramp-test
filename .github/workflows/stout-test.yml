@@ -1,6 +1,8 @@
 name: "Stout: TEST"
 "on":
   workflow_dispatch: null
+  schedule:
+    - cron: "*/15 * * * *"
 jobs:
   run:
     name: TEST
